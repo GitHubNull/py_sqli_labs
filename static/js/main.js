@@ -41,14 +41,21 @@ $(document).ready(function() {
     });
     
     // 表单提交增强
-    $('form').on('submit', function() {
-        var submitBtn = $(this).find('button[type="submit"]');
+    $('form').on('submit', function(e) {
+        var form = $(this);
+        var submitBtn = form.find('button[type="submit"]');
         var originalText = submitBtn.html();
         
-        // 显示加载状态
+        // 只对GET表单显示加载状态，POST表单正常提交
+        if (form.attr('method') && form.attr('method').toLowerCase() === 'post') {
+            // POST表单正常提交，不做任何干扰
+            return true;
+        }
+        
+        // 显示加载状态（仅限GET表单）
         submitBtn.html('<span class="loading"></span> 处理中...').prop('disabled', true);
         
-        // 如果是GET请求且页面会刷新，恢复按钮状态
+        // 恢复按钮状态
         setTimeout(function() {
             submitBtn.html(originalText).prop('disabled', false);
         }, 3000);

