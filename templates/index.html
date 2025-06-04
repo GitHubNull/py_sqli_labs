@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">
+            <i class="fas fa-shield-alt"></i>
+            Python SQLi-Labs
+        </h1>
+        <p class="hero-subtitle">专业的SQL注入漏洞测试靶场</p>
+        <p class="hero-description">
+            基于Flask构建的现代化SQL注入学习平台，提供多种类型的SQL注入测试场景，
+            包括错误注入、盲注、时间盲注等，帮助安全研究人员和开发者深入理解SQL注入漏洞。
+        </p>
+        <div class="mt-4">
+            <a href="{{ url_for('setup') }}" class="btn btn-custom btn-primary-custom me-3">
+                <i class="fas fa-database me-2"></i>初始化数据库
+            </a>
+            <a href="#labs" class="btn btn-custom btn-outline-light">
+                <i class="fas fa-play me-2"></i>开始测试
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Labs Section -->
+<section id="labs" class="py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="text-white mb-4">
+                    <i class="fas fa-flask me-2"></i>
+                    测试关卡
+                </h2>
+                <p class="text-white-50 lead">选择不同类型的SQL注入测试场景进行练习</p>
+            </div>
+        </div>
+
+        <!-- Basic Injection Labs -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h3 class="text-white mb-4">
+                    <i class="fas fa-bug me-2"></i>
+                    基础注入 (Error Based)
+                </h3>
+            </div>
+        </div>
+        <div class="lab-grid">
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+                <h4>Less-1</h4>
+                <p>GET - 基于错误的字符型注入（单引号）</p>
+                <p class="text-muted small">学习最基础的SQL注入技术，通过单引号闭合来构造恶意SQL语句。</p>
+                <a href="{{ url_for('less1') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-hashtag"></i>
+                </div>
+                <h4>Less-2</h4>
+                <p>GET - 基于错误的整数型注入</p>
+                <p class="text-muted small">学习整数型SQL注入，无需引号闭合的注入技术。</p>
+                <a href="{{ url_for('less2') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-parentheses"></i>
+                </div>
+                <h4>Less-3</h4>
+                <p>GET - 基于错误的字符型注入（带括号）</p>
+                <p class="text-muted small">学习带有括号的字符型注入，需要额外闭合括号。</p>
+                <a href="{{ url_for('less3') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-quote-left"></i>
+                </div>
+                <h4>Less-4</h4>
+                <p>GET - 基于错误的双引号注入</p>
+                <p class="text-muted small">学习双引号闭合的SQL注入技术。</p>
+                <a href="{{ url_for('less4') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+        </div>
+
+        <!-- Blind Injection Labs -->
+        <div class="row mb-5 mt-5">
+            <div class="col-12">
+                <h3 class="text-white mb-4">
+                    <i class="fas fa-eye-slash me-2"></i>
+                    盲注测试 (Blind Injection)
+                </h3>
+            </div>
+        </div>
+        <div class="lab-grid">
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h4>Less-5</h4>
+                <p>GET - Double Query注入（单引号）</p>
+                <p class="text-muted small">学习双查询注入技术，通过错误信息获取数据。</p>
+                <a href="{{ url_for('less5') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-search-plus"></i>
+                </div>
+                <h4>Less-6</h4>
+                <p>GET - Double Query注入（双引号）</p>
+                <p class="text-muted small">学习双引号闭合的双查询注入技术。</p>
+                <a href="{{ url_for('less6') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-file-export"></i>
+                </div>
+                <h4>Less-7</h4>
+                <p>GET - 导出文件注入</p>
+                <p class="text-muted small">学习利用INTO OUTFILE进行数据导出的注入技术。</p>
+                <a href="{{ url_for('less7') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-toggle-on"></i>
+                </div>
+                <h4>Less-8</h4>
+                <p>GET - 布尔盲注（单引号）</p>
+                <p class="text-muted small">学习基于布尔判断的盲注技术，通过页面回显差异获取数据。</p>
+                <a href="{{ url_for('less8') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h4>Less-9</h4>
+                <p>GET - 时间盲注（单引号）</p>
+                <p class="text-muted small">学习基于时间延迟的盲注技术，通过响应时间差异获取数据。</p>
+                <a href="{{ url_for('less9') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-stopwatch"></i>
+                </div>
+                <h4>Less-10</h4>
+                <p>GET - 时间盲注（双引号）</p>
+                <p class="text-muted small">学习双引号闭合的时间盲注技术。</p>
+                <a href="{{ url_for('less10') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+        </div>
+
+        <!-- POST Injection Labs -->
+        <div class="row mb-5 mt-5">
+            <div class="col-12">
+                <h3 class="text-white mb-4">
+                    <i class="fas fa-mail-bulk me-2"></i>
+                    POST注入测试
+                </h3>
+            </div>
+        </div>
+        <div class="lab-grid">
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <h4>Less-11</h4>
+                <p>POST - 基于错误的字符型注入</p>
+                <p class="text-muted small">学习POST请求中的SQL注入，通过登录表单进行注入测试。</p>
+                <a href="{{ url_for('less11') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+
+            <div class="lab-card">
+                <div class="lab-icon">
+                    <i class="fas fa-user-lock"></i>
+                </div>
+                <h4>Less-12</h4>
+                <p>POST - 基于错误的双引号注入</p>
+                <p class="text-muted small">学习POST请求中的双引号闭合注入技术。</p>
+                <a href="{{ url_for('less12') }}" class="btn btn-custom btn-primary-custom">
+                    <i class="fas fa-play me-1"></i>开始测试
+                </a>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            学习提示
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-graduation-cap me-2 text-primary"></i>基础知识</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i>了解SQL语法基础</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>理解UNION SELECT的使用</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>掌握注释符的作用</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>学习信息收集技巧</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-tools me-2 text-primary"></i>推荐工具</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-arrow-right text-primary me-2"></i>Burp Suite</li>
+                                    <li><i class="fas fa-arrow-right text-primary me-2"></i>SQLMap</li>
+                                    <li><i class="fas fa-arrow-right text-primary me-2"></i>HackBar</li>
+                                    <li><i class="fas fa-arrow-right text-primary me-2"></i>Postman</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>注意：</strong> 此平台仅供学习和研究使用，请勿将所学技术用于非法用途！
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // 添加卡片点击动画
+    $('.lab-card').hover(
+        function() {
+            $(this).addClass('shadow-lg');
+        },
+        function() {
+            $(this).removeClass('shadow-lg');
+        }
+    );
+    
+    // 平滑滚动
+    $('a[href^="#"]').on('click', function(event) {
+        var target = $(this.getAttribute('href'));
+        if (target.length) {
+            event.preventDefault();
+            $('html, body').stop().animate({
+                scrollTop: target.offset().top - 80
+            }, 1000);
+        }
+    });
+});
+</script>
+{% endblock %} 

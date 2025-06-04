@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Python SQLi-Labs - SQL注入测试靶场{% endblock %}</title>
+    
+    <!-- Bootstrap CSS - 本地版本 -->
+    <link href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Font Awesome - 本地版本（修复路径） -->
+    <link href="{{ url_for('static', filename='vendor/fontawesome/all-fixed.min.css') }}" rel="stylesheet">
+    <!-- Inter 字体 - 本地版本 -->
+    <link href="{{ url_for('static', filename='fonts/inter.css') }}" rel="stylesheet">
+    
+    <!-- 备选字体设置 -->
+    <style>
+        body, * { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Microsoft YaHei', '微软雅黑', sans-serif !important; 
+        }
+    </style>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-shield-alt me-2"></i>
+                Python SQLi-Labs
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i class="fas fa-home me-1"></i>首页
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-bug me-1"></i>基础注入
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('less1') }}">Less-1 (GET字符型)</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('less2') }}">Less-2 (GET整数型)</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('less3') }}">Less-3 (GET字符型变形)</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('less4') }}">Less-4 (GET双引号)</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-eye-slash me-1"></i>盲注
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('less5') }}">Less-5 (Double Query)</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('less6') }}">Less-6 (Double Query)</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('less7') }}">Less-7 (Dump into outfile)</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('less8') }}">Less-8 (Boolean盲注)</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('less9') }}">Less-9 (时间盲注)</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('less10') }}">Less-10 (时间盲注)</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-mail-bulk me-1"></i>POST注入
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('less11') }}">Less-11 (POST字符型)</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('less12') }}">Less-12 (POST双引号)</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('setup') }}">
+                            <i class="fas fa-database me-1"></i>初始化数据库
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-fluid mt-5 pt-4">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="row">
+                    <div class="col-12">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-shield-alt me-2"></i>Python SQLi-Labs</h5>
+                    <p class="mb-0">基于Flask的SQL注入测试靶场，仅供教育和学习使用。</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p class="mb-0">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        警告：此平台包含故意设计的安全漏洞，请勿在生产环境使用！
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS - 本地版本 -->
+    <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+    <!-- jQuery - 本地版本 -->
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

